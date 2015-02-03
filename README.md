@@ -30,12 +30,12 @@ Sample=SampleIDlast
 Initial housekeeping:
 ---------------------
 
-The manderCap repository should be in the same directory as the directories containing the read data (in this case those directories are called Project_Shaffer and Undetermined_indices).
+The manderCap repository should be in the same directory as the directories containing the read data (in this case those directories are called Project_Shaffer and Undetermined_indices). We'll call this top-level directory that contains the manderCap repo and the Project_Shaffer and Undetermined_indeces folders "topDirectory" from here on out.
 
 
 Move all the reads from their Sample folders into a single directory:
 
-`cd mainDirectory`
+`cd topDirectory`
 
 `mkdir allReads`
 
@@ -60,7 +60,13 @@ We also want the read files to be unzipped:
 `cd ../concatenatedReads; gunzip *.gz > ../logs/gunzipSampleReads.log 2>&1`
 
 
+Make adapter fastas:
+--------------------
+`cd topDirectory`
 
+`mkdir adapters`
+
+`perl generate_adapter_fastas.pl --in manderCap/HSEM020_adaptersKey.txt --out adapters --adapters itru`
 
 
 

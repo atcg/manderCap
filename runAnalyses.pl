@@ -40,6 +40,8 @@ while (my $line = <$configFH>) {
         $params{"targets"} = $1;
     } elsif ($line =~ /^cycles\=(.*)/) {
         $params{"cycles"} = $1;
+    } elsif ($line =~ /^timeout\=(.*)/) {
+        $params{"timeout"} = $1;  
     } else {
         die "Invalid config file line:\n$line\n";
     }
@@ -207,7 +209,7 @@ print $ARCconfigFH "# format=fastq\n";
 print $ARCconfigFH "# verbose=True\n";
 print $ARCconfigFH "# urt=True\n";
 print $ARCconfigFH "# map_against_reads=False\n";
-print $ARCconfigFH "# assemblytimeout=180\n";
+print $ARCconfigFH "# assemblytimeout=$params{'timeout'}\n";
 print $ARCconfigFH "# bowtie2_k=5\n";
 print $ARCconfigFH "# rip=True\n";
 print $ARCconfigFH "# cdna=False\n";

@@ -73,7 +73,7 @@ Run the QC and assemblies:
 -------------------------
 The following command runs all the read QC and ARC assemblies (see that script for details):
 
-`perl runAnalyses.pl -c manderCap.config`
+`perl manderCap/runAnalyses.pl -c manderCap/manderCap.config > logs/runAnalyses.stdout 2>logs/runAnalyses.stderr`
 
 
 Individual read mapping:

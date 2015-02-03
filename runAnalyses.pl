@@ -217,9 +217,9 @@ print $ARCconfigFH "# subsample=1\n";
 print $ARCconfigFH "# maskrepeats=True\n";
 print $ARCconfigFH "# workingdirectory=/home/evan/ramdisk/\n"; # Make this configurable(?)
 print $ARCconfigFH "Sample_ID	FileName	FileType\n";
-print $ARCconfigFH "allCTS	ARC/AllCTS.Ns.un1.fastq	PE1\n";
-print $ARCconfigFH "allCTS	ARC/AllCTS.Ns.un2.fastq	PE2\n";
-print $ARCconfigFH "allCTS	ARC/AllCTS.Ns.combinedJoinedAndSingles_trimmed.fastq	SE\n";
+print $ARCconfigFH "allCTS	AllCTS.Ns.un1.fastq	PE1\n";
+print $ARCconfigFH "allCTS	AllCTS.Ns.un2.fastq	PE2\n";
+print $ARCconfigFH "allCTS	AllCTS.Ns.combinedJoinedAndSingles_trimmed.fastq	SE\n";
 close($ARCconfigFH);
 
 # Run ARC

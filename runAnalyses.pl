@@ -200,7 +200,7 @@ print $ARCconfigFH "## Sample_ID:Sample_ID\n";
 print $ARCconfigFH "## FileName: path for fasta/fasta file\n";
 print $ARCconfigFH "## FileType: PE1, PE2, or SE\n";
 print $ARCconfigFH "## FileFormat: fasta or fasta\n";
-print $ARCconfigFH "# reference=$params{'targets'}\n";
+print $ARCconfigFH "# reference=$startingDir/$params{'targets'}\n";
 print $ARCconfigFH "# numcycles=$params{'cycles'}\n";
 print $ARCconfigFH "# mapper=bowtie2\n";
 print $ARCconfigFH "# assembler=spades\n";

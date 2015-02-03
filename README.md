@@ -1,4 +1,4 @@
-Summary:
+*Summary:*
 ========
 This repository holds the code used to analyze data from an exon capture experiment.
 
@@ -27,8 +27,8 @@ Sample=SampleIDlast
 ```
   
   
-Initial housekeeping:
----------------------
+*Initial housekeeping:*
+=====================
 
 The manderCap repository should be in the same directory as the directories containing the read data (in this case those directories are called Project_Shaffer and Undetermined_indices). We'll call this top-level directory that contains the manderCap repo and the Project_Shaffer and Undetermined_indeces folders "topDirectory" from here on out.
 
@@ -60,13 +60,25 @@ We also want the read files to be unzipped:
 `cd ../concatenatedReads; gunzip *.gz > ../logs/gunzipSampleReads.log 2>&1`
 
 
-Make adapter fastas:
---------------------
+Finally, we want to produce the sample-specific adapter FASTAs that we'll use to trim adapter contamination:
+
 `cd topDirectory`
 
 `mkdir adapters`
 
-`perl generate_adapter_fastas.pl --in manderCap/HSEM020_adaptersKey.txt --out adapters --adapters itru`
+`perl manderCap/generate_adapter_fastas.pl --in manderCap/HSEM020_adaptersKey.txt --out adapters --adapters itru > logs/generate_adapter_fastas.log 2>&1`
 
+
+Run the QC and assemblies:
+-------------------------
+The following command runs all the read QC and ARC assemblies (see that script for details):
+
+`perl runAnalyses.pl -c manderCap.config`
+
+
+Individual read mapping:
+------------------------
+After ARC has run, we'll process the ARC assembled contigs to arrive at our final
+reference that we'll use to map all of our individual libraries to.
 
 

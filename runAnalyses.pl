@@ -36,6 +36,10 @@ while (my $line = <$configFH>) {
         push(@{$params{"samples"}}, $1);
     } elsif ($line =~ /^\s*$/) { # This is just a line that contains only whitespace (blank line)
         next;
+    } elsif ($line =~ /^targets\=(.*)/) {
+        $params{"targets"} = $1;
+    } elsif ($line =~ /^cycles\=(.*)/) {
+        $params{"cycles"} = $1;
     } else {
         die "Invalid config file line:\n$line\n";
     }
@@ -148,35 +152,79 @@ foreach my $sample (@{$params{"samples"}}) { # Don't need threading here because
 }
 
 
+############################################################################
+# Generate the CTS reads files and the ARC config file
+############################################################################
+unless(-d "ARC") {
+    mkdir "ARC";
+}
+my $CTSreadsCommandJoined = "cat ";
+my $CTSreadsCommandUn1= "cat ";
+my $CTSreadsCommandUn2 = "cat ";
+foreach my $sample (@{$params{"samples"}}) {
+    if ($sample =~ /\_CTS$/) {
+        $CTSreadsCommandJoined = $CTSreadsCommandJoined . "$fastqJoinDir/$sample.Ns.combinedJoinedAndSingles_trimmed.fastq ";
+        $CTSreadsCommandUn1 = $CTSreadsCommandUn1 . "$fastqJoinDir/$sample.Ns.un1.fastq ";
+        $CTSreadsCommandUn2 = $CTSreadsCommandUn2 . "$fastqJoinDir/$sample.Ns.un2.fastq ";
+    }
+}
+$CTSreadsCommandJoined = $CTSreadsCommandJoined . "> ARC/AllCTS.Ns.combinedJoinedAndSingles_trimmed.fastq";
+$CTSreadsCommandUn1 = $CTSreadsCommandUn1 . "> ARC/AllCTS.Ns.un1.fastq";
+$CTSreadsCommandUn2 = $CTSreadsCommandUn2 . "> ARC/AllCTS.Ns.un2.fastq";
+print "Making the AllCTS read files\n";
+print "Running the following command:\n$CTSreadsCommandJoined";
+system($CTSreadsCommandJoined);
+print "Running the following command:\n$CTSreadsCommandUn1";
+system($CTSreadsCommandUn1);
+print "Running the following command:\n$CTSreadsCommandUn2";
+system($CTSreadsCommandUn2);
 
+# Write the config file
+open(my $ARCconfigFH, ">", "ARC/ARC_config.txt") or die "Couldn't open ARC/ARC_config.txt\n";
+print $ARCconfigFH "## Name=value pairs:\n";
+print $ARCconfigFH "## reference: contains reference sequences in fasta format\n";
+print $ARCconfigFH "## numcycles: maximum number of times to try remapping\n";
+print $ARCconfigFH "## mapper: the mapper to use (blat/bowtie2)\n";
+print $ARCconfigFH "## assembler: the assembler to use (newbler/spades)\n";
+print $ARCconfigFH "## nprocs: number of cores to use\n";
+print $ARCconfigFH "## format: fasta or fasta, all must be the same\n";
+print $ARCconfigFH "## verbose: control mapping/assembly log generation (True/False)\n";
+print $ARCconfigFH "## urt: For Newbler, enable use read tips mode (True/False)\n";
+print $ARCconfigFH "## map_against_reads: On iteration 1, skip assembly, map against mapped reads (True/False)\n";
+print $ARCconfigFH "## assemblytimeout: kill assemblies and discard targets if they take longer than N minutes\n";
+print $ARCconfigFH "##\n";
+print $ARCconfigFH "## Columns:\n";
+print $ARCconfigFH "## Sample_ID:Sample_ID\n";
+print $ARCconfigFH "## FileName: path for fasta/fasta file\n";
+print $ARCconfigFH "## FileType: PE1, PE2, or SE\n";
+print $ARCconfigFH "## FileFormat: fasta or fasta\n";
+print $ARCconfigFH "# reference=$params{'targets'}\n";
+print $ARCconfigFH "# numcycles=$params{'cycles'}\n";
+print $ARCconfigFH "# mapper=bowtie2\n";
+print $ARCconfigFH "# assembler=spades\n";
+print $ARCconfigFH "# nprocs=$params{'threads'}\n";
+print $ARCconfigFH "# format=fastq\n";
+print $ARCconfigFH "# verbose=True\n";
+print $ARCconfigFH "# urt=True\n";
+print $ARCconfigFH "# map_against_reads=False\n";
+print $ARCconfigFH "# assemblytimeout=180\n";
+print $ARCconfigFH "# bowtie2_k=5\n";
+print $ARCconfigFH "# rip=True\n";
+print $ARCconfigFH "# cdna=False\n";
+print $ARCconfigFH "# subsample=1\n";
+print $ARCconfigFH "# maskrepeats=True\n";
+print $ARCconfigFH "# workingdirectory=/home/evan/ramdisk/\n"; # Make this configurable(?)
+print $ARCconfigFH "Sample_ID	FileName	FileType\n";
+print $ARCconfigFH "allCTS	ARC/AllCTS.Ns.un1.fastq	PE1\n";
+print $ARCconfigFH "allCTS	ARC/AllCTS.Ns.un2.fastq	PE2\n";
+print $ARCconfigFH "allCTS	ARC/AllCTS.Ns.combinedJoinedAndSingles_trimmed.fastq	SE\n";
+close($ARCconfigFH);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Run ARC
+chdir("ARC");
+print "\n\nRunning the ARC assembly pipeline.\n";
+system("ARC -c ARC_config.txt > ARC_allCTS.log 2>&1");
+print "Finished running ARC. All done\n";
 
 
 

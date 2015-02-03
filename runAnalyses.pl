@@ -227,7 +227,7 @@ chdir("ARC");
 print "\n\nRunning the ARC assembly pipeline.\n";
 system("ARC -c ARC_config.txt > ARC_allCTS.log 2>&1");
 print "Finished running ARC. All done\n";
-
+chdir($startingDir);
 
 
 

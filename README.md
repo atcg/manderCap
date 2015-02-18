@@ -141,7 +141,7 @@ We'll use this as our assembly for downstream analyses:
 
 Individual read mapping:
 ------------------------
-
+Now we'll map reads to the assembly we prepared in the previous step.
 
 `cd topDir; mkdir mapping; mkdir mapping/depths`
 

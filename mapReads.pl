@@ -72,7 +72,7 @@ foreach my $sample (@{$params{"samples"}}) {
     system("java -Xmx16g -jar /home/evan/bin/picard-tools-1.125/picard.jar AddOrReplaceReadGroups I=$cleanedBam O=$sortedBam SORT_ORDER=coordinate RGPL=illumina RGPU=Test RGLB=Lib1 RGID=$sample RGSM=$sample VALIDATION_STRINGENCY=LENIENT");
     system("java -Xmx16g -jar /home/evan/bin/picard-tools-1.125/picard.jar MarkDuplicates I=$sortedBam O=$markDupsBam METRICS_FILE=$markDupsMetrics MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=800 ASSUME_SORTED=true REMOVE_DUPLICATES=false");
     print "Mapping stats for $sample\n";
-    system("samtools flagstat mapping/$sample..merged.cleaned.sorted.markDups.bam");
+    system("samtools flagstat mapping/$sample.merged.cleaned.sorted.markDups.bam");
     system("samtools depth -q 20 -Q 20 $markDupsBam > $depthFile");
 }
 

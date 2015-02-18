@@ -145,5 +145,7 @@ Individual read mapping:
 
 `cd topDir; mkdir mapping; mkdir mapping/depths`
 
-`perl manderCap/mapReads.pl --config manderCap/manderCap.config > logs/readMapping.log 2>&1`
+`perl manderCap/mapReads.pl --config manderCap/manderCap.config --reference /mnt/Data1/genomes/lgv2.fasta > logs/readMapping.log 2>&1`
+
+
 

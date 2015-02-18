@@ -15,7 +15,7 @@ GetOptions  ("config=s"      => \$configFile,
              "help|man"      => \$help) || die "Couldn't get options with GetOpt::Long: $!\n";
 
 if (!$configFile or !$reference or $help) {
-    die "Must supply --config <file>.\n";
+    die "Must supply --config <file> --reference </path/to/bwaReference.fasta>.\n";
 }
 my $startingDir = getcwd();
 open(my $configFH, "<", $configFile) or die "Couldn't open $configFile for reading: $!\n";

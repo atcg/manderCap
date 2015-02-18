@@ -16,8 +16,11 @@ AdapterFolder=./adapters
 ReadsFolder=./concatenatedReads
 QCoutputFolder=./qc
 ARCworkingFolder=/home/evan/ramdisk
-ARCoutputFolder=/home/evan/manderReads
 threads=30
+targets=targets.fasta
+cycles=6
+timeout=180
+
 Sample=SampleID1   
 Sample=SampleID2
 Sample=SampleID3

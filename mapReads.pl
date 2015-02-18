@@ -55,8 +55,8 @@ foreach my $sample (@{$params{"samples"}}) {
     my $singlesBamFile = "mapping/" . $sample . ".singlesAndJoined.bam";
     my $pairedBamFile = "mapping/" . $sample . ".paired.bam";
     my $mergedBamFile = "mapping/" . $sample . ".merged.bam";
-    my $reads1 = $params{"qcFolder"} . "/fastq-join/" . $sample . "Ns.un1.fastq";
-    my $reads2 = $params{"qcFolder"} . "/fastq-join/" . $sample . "Ns.un2.fastq";
+    my $reads1 = $params{"qcFolder"} . "/fastq-join/" . $sample . ".Ns.un1.fastq";
+    my $reads2 = $params{"qcFolder"} . "/fastq-join/" . $sample . ".Ns.un2.fastq";
     my $readsSingles = $params{"qcFolder"} . "/fastq-join/" . $sample . ".Ns.combinedJoinedAndSingles_trimmed.fastq";
     system("bwa mem -t $params{'threads'} -M $reference $readsSingles | samtools view -@ $params{'threads'} -bS - > $singlesBamFile");
     system("bwa mem -t $params{'threads'} -M $reference $reads1 $reads2 | samtools view -@ $params{'threads'} -bS - > $pairedBamFile");

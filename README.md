@@ -79,9 +79,46 @@ The following command runs all the read QC and ARC assemblies (see that script f
 `perl manderCap/runAnalyses.pl -c manderCap/manderCap.config > logs/runAnalyses.stdout 2>logs/runAnalyses.stderr`
 
 
+Assembly preparation:
+---------------------
+After ARC has run, we'll process the ARC assembled contigs to arrive at our final
+reference that we'll use to map all of our individual libraries to. We first want
+to designate a single assembled contig that is representative of each target. To do
+this, we'll find the Reciprocal Best Blast Hits (RBBHs) for each target. This is
+performed by manderCap/findRBBHs.pl. Briefly, it blasts the contigs in the assembly
+against the sequences in the target fasta file. Then it blasts the targets in the
+fasta file against the assembly. Then it goes through these blast reports and finds
+all instances where the targets had at least one hit to the assembly. For all of the
+best hits, it checks to make sure that that target was also found as the best hit
+when we blasted the assembly against the targets (hence the reciprocal part).
+
+
+`cd ARC/finished_allCTS/`
+
+`cp contigs.fasta contigs.CTSonly6iter.fasta`
+
+`../../manderCap/findRBBHs.pl --assembly contigs.CTSonly6iter.fasta --targets ../../targets.fasta --out RBBHs.CTSonly6iter.fasta`
+
+
+That process finds a total of 8386 reciprocal best blast hits (over 96%). If we were
+to map reads to this assembly and visualize coverage, we'd see a fair amount of targets
+that have spikes in read coverage at the ends of the targets. This can be the result
+of several things. It's possible that these are true repetitive regions that exist
+at the edges of our target (at the periphery of the exons, for instance). They may
+also be due to chimerism in our assemblies, whereby repetitive, non-contiguous genomic
+regions are grafted onto the edges targets due to challenges in <em>de novo</em> assembly.
+Here is one example of what what I'm talking about (the black bar represents the portion
+of the target that blasted to that assembled contig):
+
+![chimeraSpike](images/chimeraSpike.png)
+
+
+
+
+
+
 Individual read mapping:
 ------------------------
-After ARC has run, we'll process the ARC assembled contigs to arrive at our final
-reference that we'll use to map all of our individual libraries to.
+
 
 

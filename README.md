@@ -97,7 +97,7 @@ when we blasted the assembly against the targets (hence the reciprocal part).
 
 `cp contigs.fasta contigs.CTSonly6iter.fasta`
 
-`../../manderCap/findRBBHs.pl --assembly contigs.CTSonly6iter.fasta --targets ../../targets.fasta --out RBBHs.CTSonly6iter.fasta`
+`../../manderCap/findRBBHs.pl --assembly contigs.CTSonly6iter.fasta --targets ../../targets.fasta --out RBBHs.CTSonly6iter.fasta > ../../logs/findRBBHs.log 2>&1`
 
 
 That process finds a total of 8386 reciprocal best blast hits (over 96%). If we were
@@ -109,16 +109,41 @@ also be due to chimerism in our assemblies, whereby repetitive, non-contiguous g
 regions are grafted onto the edges targets due to challenges in <em>de novo</em> assembly.
 Here is one example of what what I'm talking about (the black bar represents the portion
 of the target that blasted to that assembled contig):
-
 ![chimeraSpike](images/chimeraSpike.png)
 
+To minimize this effect, we'll try to mask some of these repetitive regions prior to
+mapping. Since a given repetitive region is typically present in more than one
+representative target contig, we'll do this by masking regions that blast to multiple
+targets via self-blast:
 
+`makeblastdb -in RBBHs.CTSonly6iter.fasta -dbtype nucl > ../../logs/makeblastdb.log 2>&1`
 
+`blastn -db RBBHs.CTSonly6iter.fasta -query RBBHs.CTSonly6iter.fasta -out RBBHs.CTSonly6iter.selfBlast -evalue 1e-20 -outfmt 6`
 
+`perl ../../manderCap/maskChimeras.pl --in RBBHs.CTSonly6iter.selfBlast --sequences RBBHs.CTSonly6iter.fasta --out RBBHs.CTSonly6iter.chimeraMasked.fasta > ../../logs/maskChimeras.log 2>&1`
 
+```
+get_fasta_lengths.py --input RBBHs.CTSonly6iter.chimeraMasked.fasta
+  Reads:		8,386
+  Bp:		11,813,530
+  Avg. len:	1,408.72048653
+  STDERR len:	3.4372379005
+  Min. len:	210
+  Max. len:	6,284
+  Median len:	1,398.0
+  Contigs > 1kb:	7,816
+```
+We'll use this as our assembly for downstream analyses:
+
+`cd ../..;mkdir assembly;cp ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta assembly/;`
+
+`bwa index RBBHs.CTSonly6iter.chimeraMasked.fasta > ../logs/indexAssembly.log 2>&1`
 
 Individual read mapping:
 ------------------------
 
 
+`cd topDir; mkdir mapping; mkdir mapping/depths`
+
+`perl manderCap/mapReads.pl --config manderCap/manderCap.config > logs/readMapping.log 2>&1`
 

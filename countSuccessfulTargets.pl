@@ -247,7 +247,12 @@ foreach my $sample (@samples) {
                         $windowDepth += 0;
                     }
                 }
-                my $aveWindowDepth = $windowDepth / $baseCounter;
+                my $aveWindowDepth;
+                if ($baseCounter > 0) {
+                    $aveWindowDepth = $windowDepth / $baseCounter;
+                } else {
+                    $aveWindowDepth = 0;
+                }                
                 if ($aveWindowDepth > $max100aveDepth) {
                     $max100aveDepth = $aveWindowDepth;
                 }

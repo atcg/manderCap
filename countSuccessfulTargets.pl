@@ -37,9 +37,6 @@ if (!$blastFile or !$assembly or !$depthDir or !$outFilePrefix  or $help) {
 # these into a hash:
 my %targetMatchingRegions;
 
-
-
-
 my @samples = (
                "01A_0801_CTS",
                "01A_0809_F1",

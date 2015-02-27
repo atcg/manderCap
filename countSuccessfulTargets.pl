@@ -235,16 +235,19 @@ foreach my $sample (@samples) {
             # Go through each 100bp window of the HSP, and calculate the average depth. If it's higher
             # than the current depth, then update the max
             my $max100aveDepth = 0;
+            my $maxBaseCounter = 0;
             foreach my $baseNum (1 .. (scalar(@bases)-100)) {
                 my $windowDepth = 0;
+                my $baseCounter = 0;
                 foreach my $innerBase ($baseNum .. ($baseNum+99)) {
                     if (exists $sampleResultsHash{$hit->name()}{$innerBase}) {
                         $windowDepth += $sampleResultsHash{$hit->name()}{$innerBase};
+                        $baseCounter++;
                     } else {
                         $windowDepth += 0;
                     }
                 }
-                my $aveWindowDepth = $windowDepth / 100;
+                my $aveWindowDepth = $windowDepth / $baseCounter;
                 if ($aveWindowDepth > $max100aveDepth) {
                     $max100aveDepth = $aveWindowDepth;
                 }

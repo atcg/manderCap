@@ -290,7 +290,7 @@ foreach my $sample (@samples) {
 }
 
 foreach my $target (sort keys %targetSummaryHash) {
-    print $outFH1 "$target\t$targetSummaryHash{$target}{'max100AveUnder5'}\t$targetSummaryHash{$target}{'max100AveOver5'}\t$targetSummaryHash{$target}{'max100AveOver10'}\t$targetSummaryHash{$target}{'max100AveOver15'}\t$targetSummaryHash{$target}{'max100AveOver20'}\n";
+    print $outFH1 "$target\t$targetSummaryHash{$target}{'aveUnder5'}\t$targetSummaryHash{$target}{'aveOver5'}\t$targetSummaryHash{$target}{'aveOver10'}\t$targetSummaryHash{$target}{'aveOver15'}\t$targetSummaryHash{$target}{'aveOver20'}\t$targetSummaryHash{$target}{'max100AveUnder5'}\t$targetSummaryHash{$target}{'max100AveOver5'}\t$targetSummaryHash{$target}{'max100AveOver10'}\t$targetSummaryHash{$target}{'max100AveOver15'}\t$targetSummaryHash{$target}{'max100AveOver20'}\n";
     print $outFH2 "$target\t" . sum(@{$targetSummaryHash{$target}{'aveWindowDepth'}})/@{$targetSummaryHash{$target}{'aveWindowDepth'}} . "\t" . sum(@{$targetSummaryHash{$target}{'max100AveWindowDepth'}})/@{$targetSummaryHash{$target}{'max100AveWindowDepth'}} . "\n";
 }
 

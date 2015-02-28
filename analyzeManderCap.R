@@ -2,7 +2,8 @@ setwd("~/src/manderCap/")
 mappingStats <- read.csv("mappingStats.csv", stringsAsFactors=FALSE)
 mappingStatsNoDSN <- mappingStats[-c(18,21),]
 
-
+summary(lm(mappingStatsNoDSN$percAveOverTargetOver10 ~ mappingStatsNoDSN$individual_dna_in_capture * mappingStatsNoDSN$cot.multiplier))
+bothVar_discountMapRateMod <- (lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture * mappingStatsNoDSN$cot.multiplier))
 
 
 # Generate the nested models

@@ -240,7 +240,7 @@ foreach my $sample (@samples) {
             foreach my $baseNum (0 .. (scalar(@bases)-100)) {
                 my $maxBase = $bases[$baseNum] + 99;
                 my $maxStartingBase = $bases[scalar(@bases)-100];
-                print "Current target calc range: $bases[$baseNum] to $maxBase. Max starting base = $maxStartingBase\n";
+                #print "Current target calc range: $bases[$baseNum] to $maxBase. Max starting base = $maxStartingBase\n";
                 my $windowDepth = 0;
                 my $baseCounter = 0;
                 foreach my $innerBase ($bases[$baseNum] .. ($bases[$baseNum]+99)) {

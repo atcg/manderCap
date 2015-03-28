@@ -1,9 +1,134 @@
 setwd("~/src/manderCap/")
 mappingStats <- read.csv("mappingStats.csv", stringsAsFactors=FALSE)
 mappingStatsNoDSN <- mappingStats[-c(18,21),]
+mappingStatsNoDSN$post.50_uL_PCR_totalDNA <- mappingStatsNoDSN$post.50_uL_PCR_concentration_cleaned * 50
+mappingStatsNoDSN$CTSonly6iterRawMapRatePERCENT <- mappingStatsNoDSN$CTSonly6iterRawMapRate * 100
+mappingStatsNoDSN$CTSonly6iterDiscountMapRatePERCENT <- mappingStatsNoDSN$CTSonly6iterDiscountMapRate * 100
+mappingStatsNoDSN$CTSonly6iterPercDupesPERCENT <- mappingStatsNoDSN$CTSonly6iterPercDupes * 100
 
-summary(lm(mappingStatsNoDSN$percAveOverTargetOver10 ~ mappingStatsNoDSN$individual_dna_in_capture * mappingStatsNoDSN$cot.multiplier))
-bothVar_discountMapRateMod <- (lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture * mappingStatsNoDSN$cot.multiplier))
+
+
+png("~/Dropbox/UCLA/Research/Papers/ambystoma_optimization/PCRconcentration_to_rawMappingRate.png", width=1000, height=500, units="px")
+par(mfrow=c(1,2))
+plot(mappingStatsNoDSN$CTSonly6iterRawMapRatePERCENT ~ mappingStatsNoDSN$post.50_uL_PCR_totalDNA, col=mappingStatsNoDSN$individual, pch=20, xlab="Total DNA after amplifying 1/2 of the post-enrichment pool (ng)", ylab="Raw mapping rate (%)", main="All Libraries", cex=1.2)
+abline(lm(mappingStatsNoDSN$CTSonly6iterRawMapRatePERCENT ~ mappingStatsNoDSN$post.50_uL_PCR_totalDNA), lwd=2, col="red")
+plot(mappingStatsNoDSN$CTSonly6iterRawMapRatePERCENT[-18] ~ mappingStatsNoDSN$post.50_uL_PCR_totalDNA[-18], col=mappingStatsNoDSN$individual, pch=20, xlab="Total DNA after amplifying 1/2 of the post-enrichment pool (ng)", ylab="Raw mapping rate (%)", main="Removing Outlier", cex=1.2)
+abline(lm(mappingStatsNoDSN$CTSonly6iterRawMapRatePERCENT[-18] ~ mappingStatsNoDSN$post.50_uL_PCR_totalDNA[-18]), col="red", lwd=2)
+dev.off()
+
+png("~/Dropbox/UCLA/Research/Papers/ambystoma_optimization/qPCRave_to_rawMappingRate.png", width=600, height=600, units="px")
+plot(mappingStatsNoDSN$CTSonly6iterRawMapRatePERCENT ~ mappingStatsNoDSN$Ave_delta_Cp, col=mappingStatsNoDSN$individual, pch=20, xlab="Mean change in qPCR cycle number after enrichment", ylab="Raw mapping rate (%)", main="Predicting enrichment efficiency from qPCR validation", cex=1.2)
+abline(lm(mappingStatsNoDSN$CTSonly6iterRawMapRatePERCENT ~ mappingStatsNoDSN$Ave_delta_Cp), lwd=2, col="red")
+dev.off()
+
+
+# Figure 5--4 panel showing reduction in PCR duplication rates with different variables and increase in unique read on target rate
+png("~/Dropbox/UCLA/Research/Papers/ambystoma_optimization/four-panel.png", width=1200, height=1200, units="px")
+par(mfrow=c(2,2), mar=c(5,5,5,5))
+
+    # PCR duplication rates
+plot(mappingStatsNoDSN$individual_dna_in_capture, mappingStatsNoDSN$CTSonly6iterPercDupesPERCENT, col=c(mappingStatsNoDSN$individual), cex=2, pch=20, xlab="Amount of individual DNA in capture reaction (ng)", ylab="PCR duplication rate (%)", main="Input DNA vs. PCR duplication rate", cex.lab=1.8, cex.main=1.8, cex.axis=1.8)
+abline(lm(mappingStatsNoDSN$CTSonly6iterPercDupesPERCENT ~ mappingStatsNoDSN$individual_dna_in_capture), lwd=2, col="red")
+plot(mappingStatsNoDSN$cot.multiplier, mappingStatsNoDSN$CTSonly6iterPercDupesPERCENT, col=mappingStatsNoDSN$individual, cex=2, pch=20, xlab="Amount of c0t-1 in capture reaction (multiplier)", ylab="PCR duplication rate (%)", main="Amount of c0t-1 vs. PCR duplication rate", cex.lab=1.8, cex.main=1.8, cex.axis=1.8)
+abline(lm(mappingStatsNoDSN$CTSonly6iterPercDupesPERCENT ~ mappingStatsNoDSN$cot.multiplier), lwd=2, col="red")
+
+      # Discounted map rates
+plot(mappingStatsNoDSN$individual_dna_in_capture, mappingStatsNoDSN$CTSonly6iterDiscountMapRatePERCENT, col=mappingStatsNoDSN$individual, cex=2, pch=20, xlab="Amount of individual DNA in capture reaction (ng)", ylab="Unique reads on target (%)", main="Input DNA vs. unique reads on target", cex.lab=1.8, cex.main=1.8, cex.axis=1.8)
+abline(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRatePERCENT ~ mappingStatsNoDSN$individual_dna_in_capture), lwd=2, col="red")
+plot(mappingStatsNoDSN$cot.multiplier, mappingStatsNoDSN$CTSonly6iterDiscountMapRatePERCENT, col=mappingStatsNoDSN$individual, cex=2, pch=20, xlab="Amount of c0t-1 in capture reaction (multiplier)", ylab="Unique reads on target (%)", main="Amount of c0t-1 vs. unique reads on target", cex.lab=1.8, cex.main=1.8, cex.axis=1.8)
+abline(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRatePERCENT ~ mappingStatsNoDSN$cot.multiplier), lwd=2, col="red")
+
+dev.off()
+
+
+# Figure showing average target depth
+
+
+# Figure showing predicted vs. expected values for two-variable model
+png("~/Dropbox/UCLA/Research/Papers/ambystoma_optimization/predictedVsRealValues.png", width=600, height=600, units="px")
+par(mar=c(5,5,5,5))
+twoVarModel <- lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRatePERCENT ~ mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual_dna_in_capture)
+plot(twoVarModel$fitted.values, mappingStatsNoDSN$CTSonly6iterDiscountMapRatePERCENT, cex=1.5, pch=20, xlab="Predicted unique reads on target from c0t-1 + individual input DNA model (%)", ylab="Actual unique reads on target (%)", main="Predicted vs. actual percentages of unique reads on target", cex.lab=1.4, cex.main=1.4, cex.axis=1.4, col=mappingStatsNoDSN$individual)
+abline(coef=c(0,1), lwd=3, col="red")
+dev.off()
+
+summary(twoVarModel)
+
+# Table 3: Model comparison for discounted mapping rate
+  # Input DNA only
+summary(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture))
+AIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture))
+BIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture))
+  # cot1 only
+summary(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$cot.multiplier))
+AIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$cot.multiplier))
+BIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$cot.multiplier))
+  # individual only
+summary(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual))
+AIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual))
+BIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual))
+  # Input DNA and cot-1
+summary(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier))
+AIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier))
+BIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier))
+  # cot-1 and individual ID
+summary(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+AIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+BIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+  # Input DNA and individual ID
+summary(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$individual))
+AIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$individual))
+BIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$individual))
+  # Input DNA and cot-1 and individual ID
+summary(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+AIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+BIC(lm(mappingStatsNoDSN$CTSonly6iterDiscountMapRate ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+
+
+
+# Table 4: Model comparison for depth across HSP
+# Input DNA only
+summary(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture))
+AIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture))
+BIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture))
+# cot1 only
+summary(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$cot.multiplier))
+AIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$cot.multiplier))
+BIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$cot.multiplier))
+# individual only
+summary(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual))
+AIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual))
+BIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual))
+# Input DNA and cot-1
+summary(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier))
+AIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier))
+BIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier))
+# cot-1 and individual ID
+summary(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+AIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+BIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+# Input DNA and individual ID
+summary(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$individual))
+AIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$individual))
+BIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$individual))
+# Input DNA and cot-1 and individual ID
+summary(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+AIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+BIC(lm(mappingStatsNoDSN$AverageTargetDepthAcrossHSP ~ mappingStatsNoDSN$individual_dna_in_capture + mappingStatsNoDSN$cot.multiplier + mappingStatsNoDSN$individual))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Generate the nested models

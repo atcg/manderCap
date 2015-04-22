@@ -43,10 +43,16 @@ open(my $acceptListFH, "<", $targetsFile) or die "Couldn't open $targetsFile for
 #    "2"	    "contig01346|E20C7|OPA"	        12.7969556306204        	15.3990884098662	376	3
 #    "3"	    "contig03967|E7E8|OPA"	        14.1285259092589        	17.5862664070905	410	8
 
+#"Target"	"AverageTargetDepthAcrossHSP"	"max100AverageTargetDepth"	"SNPpercentage"
+#contig00003|E19A4|OPA	12.613540164167	15.3680791774806	0.00515463917525773
+#contig01346|E20C7|OPA	12.7969556306204	15.3990884098662	0.00806451612903226
+#contig03967|E7E8|OPA	14.1285259092589	17.5862664070905	0.0196078431372549
+
+
 while (my $line = <$acceptListFH>) {
     chomp($line);
     my @fields = split(/\t/, $line);
-    $acceptableTargetsHash{$fields[1]}++;
+    $acceptableTargetsHash{$fields[0]}++;
     #print $fields[1] . "\n";
 }
 

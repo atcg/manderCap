@@ -2,10 +2,10 @@
 
 
 system("bwa mem -t 30 ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta AllCTS.Ns.un1.fastq AllCTS.Ns.un2.fastq | samtools view -@ 30 -bS - > AllCTS.pe.bam");
-system("bwa mem -t 30 ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta AllCTS.Ns.combinedJoinedAndSingles.fastq | samtools view -@ 30 -bS - > AllCTS.se.bam");
+system("bwa mem -t 30 ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta AllCTS.Ns.combinedJoinedAndSingles_trimmed.fastq | samtools view -@ 30 -bS - > AllCTS.se.bam");
 
 system("bwa mem -t 30 ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta AllF1.Ns.un1.fastq AllF1.Ns.un2.fastq | samtools view -@ 30 -bS - > AllF1.pe.bam");
-system("bwa mem -t 30 ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta AllF1.Ns.combinedJoinedAndSingles.fastq | samtools view -@ 30 -bS - > AllF1.se.bam");
+system("bwa mem -t 30 ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta AllF1.Ns.combinedJoinedAndSingles_trimmed.fastq | samtools view -@ 30 -bS - > AllF1.se.bam");
 
 
 

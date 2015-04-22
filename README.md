@@ -204,6 +204,12 @@ bash ../manderCap/makeCTSandF1_fastqs.sh > ../logs/makeCTSandF1_fastqs.log # Cre
 perl ../manderCap/callSNPs.pl > ../logs/callCTSandF1SNPs.log 2>&1
 ```
 
+After this we end up with a file containing SNPs: CTSandF1-Q30SNPs.vcf. We'll next pull out all the
+SNPs that passed our filters using `grep PASS CTSandF1-Q30SNPs.vcf > CTSandF1-Q30SNPs_passOnly_noHeader.vcf`.
+We then want to sort through these and find only those SNPs where the CTS is homozygous and the F1 is
+heterozygous. These SNPs will show the pattern 0/0 0/1 or 1/1 0/1. We can use grep to pull those out as
+well: `grep -P "(0\/0\:\d.*\t0\/1\:)|(1\/1\:\d.*\t0\/1\:)" CTSandF1-Q30SNPs_passOnly_noHeader.vcf > qualifyingSNPs.vcf`
+
 
 
 

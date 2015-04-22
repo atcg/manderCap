@@ -15,9 +15,11 @@ system("samtools sort -@ 30 -o AllCTS.pe.sorted.bam -T blah2 AllCTS.pe.bam");
 system("samtools sort -@ 30 -o AllF1.se.sorted.bam -T blah3 AllF1.se.bam");
 system("samtools sort -@ 30 -o AllF1.pe.sorted.bam -T blah4 AllF1.pe.bam");
 
-system("samtools merge -@ 30 AllCTS.both.sorted.bam AllCTS.pe.sorted.bam AllCTS.se.sorted.bam");
-system("samtools merge -@ 30 AllF1.both.sorted.bam AllF1.pe.sorted.bam AllF1.se.sorted.bam");
+system("samtools merge -@ 30 AllCTS.both.bam AllCTS.pe.sorted.bam AllCTS.se.sorted.bam");
+system("samtools merge -@ 30 AllF1.both.bam AllF1.pe.sorted.bam AllF1.se.sorted.bam");
 
+system("samtools sort -@ 30 -o AllCTS.both.sorted.bam -T blah5 AllCTS.both.bam ");
+system("samtools sort -@ 30 -o AllF1.both.sorted.bam -T blah6 AllF1.both.bam");
 
 system("java -Xmx80g -jar ~/bin/picard-tools-1.125/picard.jar CleanSam I=AllCTS.both.sorted.bam O=AllCTS.cleaned.bam");
 system("java -Xmx80g -jar ~/bin/picard-tools-1.125/picard.jar AddOrReplaceReadGroups I=AllCTS.cleaned.bam O=AllCTS.cleaned.RG.bam SORT_ORDER=coordinate RGPL=illumina RGPU=Test RGLB=Lib1 RGID=CTS RGSM=CTS VALIDATION_STRINGENCY=LENIENT");

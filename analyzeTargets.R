@@ -5,6 +5,9 @@ targetStatsAve <- read.csv("targetMetricsRENAMED.aveDepths.txt", sep="\t")
 targetLengths <- read.csv("targetLengths.txt", sep="\t")
 targetAveWithLength <- merge(targetStatsAve, targetLengths, "Target")
 
+test <- read.csv("targetMetrics.aveDepths.sepCategories.txt", sep="\t")
+
+
 SNPS_across_baits <- read.table("~/src/manderCap/SNPcountAcrossBaits.txt", quote="\"", header=TRUE)
 #SNPpercentages_across_baits <- read.table("~/src/manderCap/percentagesOfSNPsAcrossBaits.txt", quote="\"")
 

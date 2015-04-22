@@ -235,14 +235,14 @@ all3	All3.Ns.un2.fastq	PE2
 all3	All3.Ns.combinedJoinedAndSingles_trimmed.fastq	SE
 ```
 
-After doing the assembly with all individuals, the mapping actually performed worse for all samples (not just CTS). So we'll use the CTS-only assembly for now.
+After doing the assembly with all individuals, the mapping actually performed worse for all samples (not just CTS). So we'll use the CTS-only assembly for this exercise.
 
 
 
 Arrive at final target set:
 ---------------------------
 We only included targets in the average depth calculations that had blast HSPs
-from the original target set to the assembled contigs that were greater than 100bp
+from the original targets to the assembled contigs that were greater than 100bp
 long. This left us with 8,208 total targets. When we called SNPs across targets and
 counted how many SNPs were present across HSPs, we did not give ourselves a 100bp
 minimum. We found a total of 6,959 targets with at least one SNP that was homozygous
@@ -343,7 +343,7 @@ targets entirely. Let's first see how many targets made it into our target set
 that have N's in them:
 
 ```
-grep -P "^[ATCGN].*N" finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP.fasta
+grep -cP "^[ATCGN].*N" finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP.fasta
 16
 ```
 

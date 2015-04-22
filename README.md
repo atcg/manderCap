@@ -210,8 +210,14 @@ We then want to sort through these and find only those SNPs where the CTS is hom
 heterozygous. These SNPs will show the pattern 0/0 0/1 or 1/1 0/1. We can use grep to pull those out as
 well: `grep -P "(0\/0\:\d.*\t0\/1\:)|(1\/1\:\d.*\t0\/1\:)" CTSandF1-Q30SNPs_passOnly_noHeader.vcf > qualifyingSNPs.vcf`
 
+Now that we have a list of qualifying SNPs, we want to look at each target individually, and count
+how many SNPs occur in the target (baited) region, as defined by the bait set used to enrich these
+targets:
 
-
+```
+blastn -db ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -query ../targetsNoBd.fasta -outfmt 6 -out targets_bl2_RBBHsChimeraMasked.blast
+perl ../manderCap/countSNPsOverTarget.pl --vcf qualifyingSNPs.vcf --blast targets_bl2_RBBHsChimeraMasked.blast > snpPercentages.txt
+```
 
 
 Alternative assembly creation and evaluation:

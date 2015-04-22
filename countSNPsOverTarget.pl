@@ -72,7 +72,7 @@ while (my $line = <$vcfFH>) {
 }
 
 foreach my $target (keys %snpsWithinTargets) {
-    print $snpsWithinTargets{$target} / scalar(keys %{$targetMatchingRegions{$target}}) . "\n";
+    print $target . "\t" . $snpsWithinTargets{$target} / scalar(keys %{$targetMatchingRegions{$target}}) . "\n";
 }
 
 

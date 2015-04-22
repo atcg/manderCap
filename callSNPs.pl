@@ -32,17 +32,17 @@ system("java -Xmx80g -jar ~/bin/picard-tools-1.125/picard.jar MergeSamFiles SO=c
 system("samtools index CTSandF1.bam");
 
 ## Realign around indels
-system("java -Xmx80g -jar ~/bin/GATK.jar -T RealignerTargetCreator -R ../../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1.bam --minReadsAtLocus 4 -o CTSandF1.intervals");
-system("java -Xmx80g -jar ~/bin/GATK.jar -T IndelRealigner -R ../../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1.bam -targetIntervals CTSandF1.intervals -LOD 3.0 -o CTSandF1-realigned.bam");
+system("java -Xmx80g -jar ~/bin/GATK.jar -T RealignerTargetCreator -R ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1.bam --minReadsAtLocus 4 -o CTSandF1.intervals");
+system("java -Xmx80g -jar ~/bin/GATK.jar -T IndelRealigner -R ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1.bam -targetIntervals CTSandF1.intervals -LOD 3.0 -o CTSandF1-realigned.bam");
 
 ## Call SNPs
-system("java -Xmx80g -jar ~/bin/GATK.jar -T UnifiedGenotyper -R ../../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1-realigned.bam -gt_mode DISCOVERY -stand_call_conf 30 -stand_emit_conf 10 -o CTSandF1-rawSNPS-Q30.vcf");
+system("java -Xmx80g -jar ~/bin/GATK.jar -T UnifiedGenotyper -R ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1-realigned.bam -gt_mode DISCOVERY -stand_call_conf 30 -stand_emit_conf 10 -o CTSandF1-rawSNPS-Q30.vcf");
 
 ## annotate SNPs
-system("java -Xmx80g -jar ~/bin/GATK.jar -T VariantAnnotator -R ../../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1-realigned.bam -G StandardAnnotation -V:variant,VCF CTSandF1-rawSNPS-Q30.vcf -XA SnpEff -o CTSandF1-rawSNPS-Q30-annotated.vcf");
+system("java -Xmx80g -jar ~/bin/GATK.jar -T VariantAnnotator -R ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1-realigned.bam -G StandardAnnotation -V:variant,VCF CTSandF1-rawSNPS-Q30.vcf -XA SnpEff -o CTSandF1-rawSNPS-Q30-annotated.vcf");
 
 ## call indels
-system("java -Xmx80g -jar ~/bin/GATK.jar -T UnifiedGenotyper -R ../../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1-realigned.bam -gt_mode DISCOVERY -glm INDEL -stand_call_conf 30 -stand_emit_conf 10 -o CTSandF1-inDels-Q30.vcf");
+system("java -Xmx80g -jar ~/bin/GATK.jar -T UnifiedGenotyper -R ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -I CTSandF1-realigned.bam -gt_mode DISCOVERY -glm INDEL -stand_call_conf 30 -stand_emit_conf 10 -o CTSandF1-inDels-Q30.vcf");
 
 ## filter SNP calls around indels
-system('java -Xmx80g -jar ~/bin/GATK.jar -T VariantFiltration -R ../../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -V CTSandF1-rawSNPS-Q30-annotated.vcf --mask CTSandF1-inDels-Q30.vcf --maskExtension 5 --maskName InDel --clusterWindowSize 10 --filterExpression "MQ0 >= 4 && ((MQ0 / (1.0 * DP)) > 0.1)" --filterName "BadValidation" --filterExpression "QUAL < 30.0" --filterName "LowQual" --filterExpression "QD < 5.0" --filterName "LowVQCBD" -o CTSandF1-Q30SNPs.vcf');
+system('java -Xmx80g -jar ~/bin/GATK.jar -T VariantFiltration -R ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -V CTSandF1-rawSNPS-Q30-annotated.vcf --mask CTSandF1-inDels-Q30.vcf --maskExtension 5 --maskName InDel --clusterWindowSize 10 --filterExpression "MQ0 >= 4 && ((MQ0 / (1.0 * DP)) > 0.1)" --filterName "BadValidation" --filterExpression "QUAL < 30.0" --filterName "LowQual" --filterExpression "QD < 5.0" --filterName "LowVQCBD" -o CTSandF1-Q30SNPs.vcf');

@@ -201,7 +201,6 @@ cd ..
 mkdir callSNPs
 cd callSNPs
 bash ../manderCap/makeCTSandF1_fastqs.sh > ../logs/makeCTSandF1_fastqs.log # Create the master F1 and CTS fastq files to map
-
 perl ../manderCap/callSNPs.pl > ../logs/callCTSandF1SNPs.log 2>&1
 ```
 

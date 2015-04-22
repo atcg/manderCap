@@ -200,16 +200,9 @@ CTS and BTS. First we need to call SNPs using all of the CTS and F1 reads:
 cd ..
 mkdir callSNPs
 cd callSNPs
-cat ../qc/fastq-join/*F1.Ns.un1.fastq > AllF1.Ns.un1.fastq
-cat ../qc/fastq-join/*F1.Ns.un2.fastq > AllF1.Ns.un2.fastq
-cat ../qc/fastq-join/*F1.Ns.combinedJoinedAndSingles_trimmed.fastq > AllF1.Ns.combinedJoinedAndSingles_trimmed.fastq
-cat ../qc/fastq-join/*CTS.Ns.un1.fastq > AllCTS.Ns.un1.fastq
-cat ../qc/fastq-join/*CTS.Ns.un2.fastq > AllCTS.Ns.un2.fastq
-cat ../qc/fastq-join/*CTS.Ns.combinedJoinedAndSingles_trimmed.fastq > AllCTS.Ns.combinedJoinedAndSingles_trimmed.fastq
+bash ../manderCap/makeCTSandF1_fastqs.sh > ../logs/makeCTSandF1_fastqs.log # Create the master F1 and CTS fastq files to map
 
-
-
-perl ../manderCap/callSNPs.pl
+perl ../manderCap/callSNPs.pl > ../logs/callCTSandF1SNPs.log 2>&1
 ```
 
 

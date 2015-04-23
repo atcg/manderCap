@@ -501,8 +501,83 @@ that the HSPs had 1.0 for a fraction of conserved bases in the match.
 
 
 
+Final Manual Adjustment:
+------------------------
+The target set in finalAssembly/finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP_noNs.fasta
+contains 80 or the original OPA sequences. We wish to
+reincorporate E15A3, as it was interesting in the previous
+analyses. It did not make it to the final target set in
+this analysis because it was not selected in the reciprocal
+best blast hit stages.
 
+After pulling the sequence from the original "contigs.fasta" assembly, we put
+it into a new fasta file called E15A3.fasta. Then:
 
+`makeblastdb -in E15A3.fasta -dbtype nucl`
+
+`blastn -db E15A3.fasta -query ../targetsNoBd.fasta -outfmt 6`
+
+This shows that the portion of the assembled contig that corresponds to the
+original target sequence in bases 558 to 948.
+
+We'll pull out that sequence with the following script:
+
+```perl
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Bio::SeqIO;
+
+my $seq = shift;
+my $seq2 = shift;
+
+my $seqIn = Bio::SeqIO->new(-file => $seq,
+                            -format => 'fasta');
+
+my $seqOut = Bio::SeqIO->new(-file => ">$seq2",
+                             -format => 'fasta');
+         
+while (my $seq = $seqIn->next_seq()) {
+    my $overlappingSeq = $seq;
+    $overlappingSeq->seq($seq->subseq(558,948));
+    $seqOut->write_seq($overlappingSeq);
+}
+```
+
+`perl subsetE15A3.pl E15A3.fasta E15A3_shortened.fasta`
+
+```
+get_fasta_lengths.py --input E15A3_shortened.fasta 
+Reads:		1
+Bp:		391
+Avg. len:	391.0
+STDERR len:	nan
+Min. len:	391
+Max. len:	391
+Median len:	391.0
+Contigs > 1kb:	0
+```
+
+That's the right length, let's just make sure we pulled out the right bit:
+
+`makeblastdb -in E15A3_shortened.fasta -dbtype nucl`
+
+`blastn -db E15A3_shortened.fasta -query ../targets.fasta -outfmt 6`
+
+Which outputs:
+
+`contig317689|E15A3|OPA	allCTS_:_contig317689|E15A3|OPA_:_Contig001	98.47	391	6	0	1	391	391	1	0.0	  689`
+
+So that looks right--the entire original target sequence overlaps with this
+new sequence we subseq'd from the assembly. We'll append it to the final
+target list:
+
+`cat finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP_noNs.fasta E15A3_shortened.fasta > targetsToOrder.fasta`
+
+Then just remove the "NODE_1_length_2436_cov_65.0351_ID_1" from the last
+sequence identifier. The sequence identifier for this target will be slightly
+different from the others, because the others had the original target
+name appended to the sequence during the reciprocal best blast hit analysis.
 
 <br><br><br><br><br><br><br><br><br><br>
 

@@ -503,8 +503,8 @@ that the HSPs had 1.0 for a fraction of conserved bases in the match.
 
 Final Manual Adjustment:
 ------------------------
-The target set in finalAssembly/finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP_noNs.fasta
-contains 80 or the original OPA sequences. We wish to
+The target set finalAssembly/finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP_noNs.fasta
+contains 80 of the original OPA sequences. We wish to
 reincorporate E15A3, as it was interesting in the previous
 analyses. It did not make it to the final target set in
 this analysis because it was not selected in the reciprocal

@@ -291,7 +291,9 @@ while(my $line = <$FH>) {
 
 `cp ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta ./`
 
-`perl ../manderCap/extendFinalTargets.pl --targets qualifyingTargetListDepth5.tsv --blast targets_bl2_chimeraMaskRBBHs.1e-20.blast --assembly RBBHs.CTSonly6iter.chimeraMasked.fasta --minlength 300 --out finalTargetSetDepth5_atleast1SNP_min300bp.fasta`
+`perl ../manderCap/extendFinalTargets.pl --targets targetsRenamed_Max100AveDepthOver5_withSNPs.tsv --blast targets_bl2_RBBHsChimeraMasked.blast --assembly RBBHs.CTSonly6iter.chimeraMasked.fasta --minlength 300 --out finalTargetSetDepth5_atleast1SNP_min300bp.fasta`
+
+Three targets were dropped because the assembled contigs were less than 300bp long.
 
 Now make a blast database out of that final target set and run a self blast:
 
@@ -303,7 +305,7 @@ Now make a blast database out of that final target set and run a self blast:
 Since we end up with more lines in the self blast output file, we want to find which
 targets had multiple hits and/or multiple HSPs:
 ```
-perl flagMultiHits.pl --in finalTargetSetDepth5_atleast1SNP_min300bp.bl2self.blast 
+perl ../manderCap/flagMultiHits.pl --in finalTargetSetDepth5_atleast1SNP_min300bp.bl2self.blast 
     Multiple hsps found for allCTS_:_contig315752|FAM198A|11_:_Contig001_contig315752|FAM198A|11
     Multiple hsps found for allCTS_:_contig315214|SNX33|6_:_Contig002_contig315214|SNX33|6
     Multiple hsps found for allCTS_:_contig359783|DERL2|6_:_Contig001_contig359783|DERL2|6
@@ -319,18 +321,18 @@ target itself contains a repetitive region or that the assembly somehow included
 repetitive sequence. Because none of them are OPAs, and because there are only eight
 of them, we'll just remove them entirely from the target set:
 
-`perl removeMultiHSPtargets.pl --in finalTargetSetDepth5_atleast1SNP_min300bp.fasta --out finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP.fasta`
+`perl ../manderCap/removeMultiHSPtargets.pl --in finalTargetSetDepth5_atleast1SNP_min300bp.fasta --out finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP.fasta`
 
 ```
-get_fasta_lengths --input finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP.fasta
-    Reads:		5,249
-    Bp:		1,694,640
-    Avg. len:	322.850066679
-    STDERR len:	0.49895977555
-    Min. len:	300
-    Max. len:	455
-    Median len:	300.0
-    Contigs > 1kb:	0
+get_fasta_lengths.py --input finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP.fasta 
+Reads:		5,249
+Bp:		1,694,651
+Avg. len:	322.852162317
+STDERR len:	0.498945889134
+Min. len:	300
+Max. len:	455
+Median len:	300.0
+Contigs > 1kb:	0
 ```
 
 Now we'll check it to make sure there are no multi-hit or multi-HSP blast records.
@@ -419,8 +421,90 @@ Contigs > 1kb:	0
 
 This is now our final set of targets that we will design baits from.
 
+```
+cd ..
+mkdir finalAssembly
+cd finalAssembly/
+cp ../callSNPs/finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP_noNs.fasta ./
+```
+
+We'll run a few checks on this assembly to make sure things look good. First, confirm
+there are no N's:
+```
+grep -cP "^[ATCGN].*N" finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP_noNs.fasta 
+0
+```
+
+Next, we'll make sure that all of our targets here have full-length blast hits to
+original chimera-masked assembly:
+```
+blastn -db ../ARC/finished_allCTS/RBBHs.CTSonly6iter.chimeraMasked.fasta -query finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP_noNs.fasta -out finalTargets_bl2_RBBHsChimeraMasked.blast -outfmt 6
+```
+```perl
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Bio::SearchIO;
+use Bio::SeqIO;
+
+my $in = shift;
+my $seqs = shift;
+my $out = shift;
+
+my %seqHash;
+
+my $seqIn = Bio::SeqIO->new(-file => $seqs,
+                            -format => 'fasta');
+                            
+while (my $seq = $seqIn->next_seq()) {
+    $seqHash{$seq->display_id()} = $seq->length();
+}
+
+my %blastHash;
+
+my $searchIn = Bio::SearchIO->new(-file => $in,
+                                  -format => 'fasta');
+
+while (my $result = $searchIn->next_result()) {
+    my $hit = $result->next_hit();
+    my $hsp = $result->next_hsp();
+    if ($hsp->frac_identical("total") < 1.0) {
+        die "Imperfect match for best HSP!\n";
+    }
+    $blastHash{$result->name()} = $hsp->length('query');
+}
+
+my $fullCounter = 0;
+my $nonFullCounter = 0;
+foreach my $target (sort keys %seqHash) {
+    if ($seqHash{$target} == $blastHash{$target}) {
+        $fullCounter++;
+    } else {
+        $nonFullCounter++;
+    }
+}
+print "Full-length matches: $fullCounter\n";
+print "Incomplete matches: $nonFullCounter\n";
+```
+
+```
+perl checkForFullLengthMatches.pl finalTargets_bl2_RBBHsChimeraMasked.blast finalTargetSetDepth5_atleast1SNP_min300bp_noMultiHSP_noNs.fasta
+Full-length matches: 5236
+Incomplete matches: 0
+```
+
+That looks good--we have 5,236 target sequences, and 5,236 full-length matches.
+We were only looking at the highest-scoring HSPs, and we made a check to make sure
+that the HSPs had 1.0 for a fraction of conserved bases in the match.
 
 
+
+
+
+
+
+<br><br><br><br><br><br><br><br><br><br>
 
 
 

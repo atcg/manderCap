@@ -56,9 +56,9 @@ while (my $line = <$acceptListFH>) {
     #print $fields[1] . "\n";
 }
 
-foreach my $key (sort keys %acceptableTargetsHash) {
+#foreach my $key (sort keys %acceptableTargetsHash) {
 #    print "Hash key: " . $key . "\n";
-}
+#}
 
 print "List contained a total of " . scalar(keys %acceptableTargetsHash) . " acceptable targets.\n";
 

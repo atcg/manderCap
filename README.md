@@ -579,6 +579,19 @@ sequence identifier. The sequence identifier for this target will be slightly
 different from the others, because the others had the original target
 name appended to the sequence during the reciprocal best blast hit analysis.
 
+Final target set to order specs:
+```
+get_fasta_lengths.py --input targetsToOrder.fasta 
+Reads:		5,237
+Bp:		1,691,142
+Avg. len:	322.921901852
+STDERR len:	0.500010140248
+Min. len:	300
+Max. len:	455
+Median len:	300.0
+Contigs > 1kb:	0
+```
+
 <br><br><br><br><br><br><br><br><br><br>
 
 
